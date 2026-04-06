@@ -6,7 +6,8 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	startup "github.com/genus555/spa/internal/init"
+	startup		"github.com/genus555/spa/internal/init"
+	cl			"github.com/genus555/spa/internal/clientloop"
 )
 
 func main() {
@@ -22,4 +23,27 @@ func main() {
 	fmt.Println(key)
 
 	fmt.Println("Insert 2 factor here")
+
+	cl.PrintCommands()
+
+	for {
+		inputs := cl.GetInput()
+		if len(inputs) == 0 {
+			continue
+		}
+		switch inputs[0] {
+		case "test":
+			cl.TestEncryptPW(key)
+		case "register":
+			fmt.Println("WIP")
+		case "help":
+			cl.PrintCommands()
+		case "quit":
+			fmt.Println("Goodbye")
+			return
+		default:
+			fmt.Printf("\"%s\" is not a valid command\n", inputs[0])
+			continue
+		}
+	}
 }
