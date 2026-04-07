@@ -20,7 +20,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Problem getting encryption key: %v", err)
 	}
-	fmt.Println(key)
 
 	fmt.Println("Insert 2 factor here")
 
@@ -33,9 +32,11 @@ func main() {
 		}
 		switch inputs[0] {
 		case "test":
-			cl.TestEncryptPW(key)
+			err := cl.TestEncryptPW(key, inputs)
+			if err != nil {fmt.Println(err)}
 		case "register":
-			fmt.Println("WIP")
+			err := cl.HandleRegister(key, inputs)
+			if err != nil {fmt.Println(err)}
 		case "help":
 			cl.PrintCommands()
 		case "quit":
