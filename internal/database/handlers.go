@@ -59,9 +59,11 @@ func (db *DB) HandleTransfer(inputs []string) error {
 	}
 	switch inputs[1] {
 	case "in":
-		db.transferIn()
+		err := db.transferIn()
+		if err != nil {return err}
 	case "out":
-		db.transferOut()
+		err := db.transferOut()
+		if err != nil {return err}
 	default:
 		return fmt.Errorf("Not a valid transfer.\nTransfer Usage: transfer [in/out]")
 	}

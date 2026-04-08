@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_	"modernc.org/sqlite"
 	cl	"github.com/genus555/spa/internal/clientloop"
@@ -80,11 +81,50 @@ func (db *DB) deleteEntry (pw_name string) error {
 }
 
 func (db *DB) transferIn () error {
-	fmt.Println("Transferring in")
+	db.database.Close()
+
+	wd, err := os.Getwd()
+	if err != nil {return err}
+	src_dir := wd + "/transfer"
+
+	_, err = os.Stat(src_dir+"/.env")
+	if os.IsNotExist(err) {
+		return fmt.Errorf("Missing env file")
+	} else if err != nil {return err}
+	_, err = os.Stat(src_dir+"/passwords.db")
+	if os.IsNotExist(err) {
+		return fmt.Errorf("Missing password database file")
+	} else if err != nil {return err}
+	if err := cl.CopyFile(src_dir+"/.env", wd+"/.env"); err != nil {return err}
+	if err := cl.CopyFile(src_dir+"/passwords.db", wd+"/passwords.db"); err != nil {return err}
+	
+	db.database, err =  sql.Open("sqlite", "./passwords.db")
+	if err != nil {return err}
+
+	fmt.Println("Information has been transferred")
 	return nil
 }
 
 func (db *DB) transferOut() error {
-	fmt.Println("Transferring out")
+	db.database.Close()
+
+	wd, err := os.Getwd()
+	if err != nil {return err}
+	transfer_dir := wd + "/transfer"
+
+	path_info, err := os.Stat(transfer_dir)
+	if os.IsNotExist(err) {
+		err = os.Mkdir("transfer", 0755)
+		if err != nil {return err}
+	} else if err != nil {return err} else if !path_info.IsDir() {
+		return fmt.Errorf("Path doesn't lead to a directory")
+	}
+	if err := cl.CopyFile(wd+"/.env", transfer_dir+"/.env"); err != nil {return err}
+	if err := cl.CopyFile(wd+"/passwords.db", transfer_dir+"/passwords.db"); err != nil {return err}
+
+	db.database, err = sql.Open("sqlite", "./passwords.db")
+	if err != nil {return err}
+
+	fmt.Println("Transfer folder has been made")
 	return nil
 }
