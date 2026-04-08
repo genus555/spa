@@ -9,20 +9,7 @@ import (
 	"io"
 )
 
-func TestEncryptPW(key []byte, inputs []string) error {
-	encrypted, err := encryptPW(key, inputs[1])
-	if err != nil {return err}
-
-	fmt.Println(encrypted)
-
-	decrypted, err := decryptPW(key, encrypted)
-	if err != nil {return err}
-	fmt.Println(decrypted)
-	return nil
-}
-
-func encryptPW(key []byte, pw string) ([]byte, error) {
-	fmt.Printf("Unencrypted PW: %v\n", pw)
+func EncryptPW(key []byte, pw string) ([]byte, error) {
 	byte_pw := []byte(pw)
 
 	block, err := aes.NewCipher(key)
@@ -41,7 +28,7 @@ func encryptPW(key []byte, pw string) ([]byte, error) {
 	return ciphertext, nil
 }
 
-func decryptPW(key []byte, enc_pw []byte) (string, error) {
+func DecryptPW(key []byte, enc_pw []byte) (string, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {return "", err}
 

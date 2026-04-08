@@ -21,6 +21,10 @@ func GetInput() []string {
 func PrintCommands() {
 	fmt.Println("List of available commands:")
 	fmt.Println("	*register:\n	     Register a new password\n	     Usage: register [password_name] [password]")
+	fmt.Println("	*get:\n	     Shows the associated password\n	     Usage: get [password_name]")
+	fmt.Println("	*delete:\n	     Deletes the associated password\n	     Usage: delete [password_name]")
+	fmt.Println("	*list:\n	     Lists all saved password names\n	     Usage: list")
+	fmt.Println("	*transfer:\n	     For transferring information to new device (More info on github.com/genus555/spa\n	     Usage: transfer [in/out]")
 	fmt.Println("	*help:\n	     Shows available commands")
 	fmt.Println("	*quit:\n	     Stop program")
 }
