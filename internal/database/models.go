@@ -9,11 +9,14 @@ import (
 type DB struct {
 	database	*sql.DB
 	key			[]byte
+	Username	string
 }
 
-func NewDB(db *sql.DB, key []byte) DB {
-	return DB{
+func NewDB(db *sql.DB, key []byte) *DB {
+	database := DB{
 		database:	db,
 		key:		key,
+		Username:	"",
 	}
+	return &database
 }

@@ -17,10 +17,22 @@ func (db *DB) Setup() error {
 			encrypted_password BLOB NOT NULL
 			)
 		`)
-		return err
+	if err != nil {fmt.Errorf("Problem creating passwords database")}
+	_, err = db.database.Exec(`
+		CREATE TABLE IF NOT EXISTS user (
+			username TEXT NOT NULL,
+			otp_secret TEXT NOT NULL
+			)
+		`)
+	if err != nil {fmt.Errorf("Problem creating user database")}
+	return nil
 }
 
-func (db *DB) addEntry (pw_name string, enc_pw []byte) error {
+func (db *DB) GetKey() []byte {
+	return db.key
+}
+
+func (db *DB) AddEntry(pw_name string, enc_pw []byte) error {
 	var exists string
 	if err := db.database.QueryRow("SELECT name FROM passwords WHERE name = ?", pw_name).Scan(&exists); err == nil {
 		fmt.Println("A password under that name already exists")
@@ -31,7 +43,7 @@ func (db *DB) addEntry (pw_name string, enc_pw []byte) error {
 	return nil
 }
 
-func (db *DB) getEntry (pw_name string) error {
+func (db *DB) GetEntry(pw_name string) error {
 	var enc_pw []byte
 	err := db.database.QueryRow("SELECT encrypted_password FROM passwords WHERE name = ?", pw_name).Scan(&enc_pw)
 	if err == sql.ErrNoRows {
@@ -44,7 +56,7 @@ func (db *DB) getEntry (pw_name string) error {
 	return nil
 }
 
-func (db *DB) listEntries () error {
+func (db *DB) ListEntries() error {
 	var count int
 	if err := db.database.QueryRow("SELECT COUNT(*) FROM passwords").Scan(&count); err != nil {return err}
 	if count == 0 {
@@ -64,7 +76,7 @@ func (db *DB) listEntries () error {
 	return nil
 }
 
-func (db *DB) deleteEntry (pw_name string) error {
+func (db *DB) DeleteEntry(pw_name string) error {
 	var exists string
 	if err := db.database.QueryRow("SELECT name FROM passwords WHERE name = ?", pw_name).Scan(&exists); err != nil {
 		if err == sql.ErrNoRows {
@@ -80,7 +92,41 @@ func (db *DB) deleteEntry (pw_name string) error {
 	return nil
 }
 
-func (db *DB) transferIn () error {
+func (db *DB) CheckUserExist() (int, error) {
+	var count int
+	if err := db.database.QueryRow("SELECT COUNT(*) FROM user").Scan(&count); err != nil {return 0, err}
+	return count, nil
+}
+
+func (db *DB) AddUser(username, otp_secret string) error {
+	_, err := db.database.Exec("INSERT INTO user (username, otp_secret) VALUES (?,?)", username, otp_secret)
+	if err != nil {return err}
+	return nil
+}
+
+func (db *DB) GetUser() (string, error) {
+	var username string
+	err := db.database.QueryRow("SELECT username FROM user").Scan(&username)
+	if err != nil {return "", err}
+	return username, nil
+}
+
+func (db *DB) DeleteUser(username string) error {
+	_, err := db.database.Exec("DELETE FROM user WHERE username = ?", username)
+	if err != nil {return err}
+
+	fmt.Printf("User \"%s\" has been deleted.\n", username)
+	return nil
+}
+
+func (db *DB) GetOTPSecret(username string) (string, error) {
+	var otp_secret string
+	err := db.database.QueryRow("SELECT otp_secret FROM user WHERE username = ?", username).Scan(&otp_secret)
+	if err != nil {return "", err}
+	return otp_secret, nil
+}
+
+func (db *DB) TransferIn() error {
 	db.database.Close()
 
 	wd, err := os.Getwd()
@@ -105,7 +151,7 @@ func (db *DB) transferIn () error {
 	return nil
 }
 
-func (db *DB) transferOut() error {
+func (db *DB) TransferOut() error {
 	db.database.Close()
 
 	wd, err := os.Getwd()

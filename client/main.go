@@ -10,6 +10,7 @@ import (
 	_ "modernc.org/sqlite"
 	startup		"github.com/genus555/spa/internal/init"
 	cl			"github.com/genus555/spa/internal/clientloop"
+	h			"github.com/genus555/spa/internal/handlers"
 	database	"github.com/genus555/spa/internal/database"
 )
 
@@ -35,7 +36,16 @@ func main() {
 		log.Fatalf("Problem connecting with database: %v", err)
 	}
 
-	fmt.Println("Insert 2 factor here")
+	err = h.HandleCheckUser(db)
+	if err != nil {
+		log.Fatalf("Problem authenticating user: %v", err)
+	}
+
+	username, err := h.HandleGetUser(db)
+	if err != nil {
+		log.Fatalf("Problem getting user from database: %v", err)
+	}
+	db.Username = username
 
 	cl.PrintCommands()
 
@@ -45,23 +55,24 @@ func main() {
 			continue
 		}
 		switch inputs[0] {
-		case "test":
-			fmt.Println("no tests atm")
 		case "register":
-			err := db.HandleRegister(inputs)
+			err := h.HandleRegister(db, inputs)
 			if err != nil {fmt.Println(err)}
 		case "get":
-			err := db.HandleGet(inputs)
+			err := h.HandleGet(db, inputs)
 			if err != nil {fmt.Println(err)}
 		case "delete":
-			err := db.HandleDelete(inputs)
+			err := h.HandleDelete(db, inputs)
 			if err != nil {fmt.Println(err)}
 		case "list":
-			err := db.HandleList()
+			err := h.HandleList(db)
 			if err != nil {fmt.Println(err)}
 		case "transfer":
-			err := db.HandleTransfer(inputs)
+			err := h.HandleTransfer(db, inputs)
 			if err != nil {fmt.Println(err)}
+		case "deleteuser":
+			err := h.HandleDeleteUser(db, inputs)
+			if err != nil {fmt.Println(err)} else {return}
 		case "help":
 			cl.PrintCommands()
 		case "quit":
@@ -69,7 +80,6 @@ func main() {
 			return
 		default:
 			fmt.Printf("\"%s\" is not a valid command\n", inputs[0])
-			continue
 		}
 	}
 }
