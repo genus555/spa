@@ -1,6 +1,8 @@
 # **Simple Password Aggregator**
 
-A simple password aggregator that saves passwords that can be recalled later by their name. Passwords are encrypted before being saved. To access your saved passwords, you will need to provide your username and a temporary password saved on a TOTP Authenticator app of your choice.
+A simple password aggregator that saves passwords that can be recalled later by their name. Passwords are encrypted before being saved. To access your saved passwords, you will need to provide your username and a temporary password saved on a TOTP Authenticator app of your choice.  
+  
+Everything on the internet requires an account and best security practice is to use a different password for every website/account. For me personally, I like playing games on multiple accounts because I like swapping between differnt IGN's, meaning I have several passwords linked to multiple differnt usernames I need to remember. It's very easy to forget your password or which password is associated with which account so I made SPA to help save passwords with a name to remember which account/website they're associated with.
 
 ## Requirements:
 - [Go](https://golang.org/) 1.21+
