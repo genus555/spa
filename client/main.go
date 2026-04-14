@@ -3,10 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"database/sql"
 
-	"github.com/joho/godotenv"
 	_ "modernc.org/sqlite"
 	startup		"github.com/genus555/spa/internal/init"
 	cl			"github.com/genus555/spa/internal/clientloop"
@@ -22,16 +20,12 @@ func main() {
 	}
 	defer db_file.Close()
 
-	godotenv.Load()
-	if err := startup.GenerateEnv(); err != nil {
-		log.Fatalf("Problem creating .env: %v", err)
-	}
-	key, err := startup.DecodeKey(os.Getenv("ENCRYPTION_KEY"))
+	tmp_key, err := startup.GenerateEncryptionKey()
 	if err != nil {
-		log.Fatalf("Problem getting encryption key: %v", err)
+		log.Fatalf("Problem generating encryption key: %v", err)
 	}
 
-	db := database.NewDB(db_file, key)
+	db := database.NewDB(db_file, tmp_key)
 	if err := db.Setup(); err != nil {
 		log.Fatalf("Problem connecting with database: %v", err)
 	}

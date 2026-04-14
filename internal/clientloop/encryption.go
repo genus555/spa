@@ -7,6 +7,7 @@ import (
 	"crypto/rand"
 	"bytes"
 	"io"
+	"encoding/base64"
 )
 
 func EncryptPW(key []byte, pw string) ([]byte, error) {
@@ -47,4 +48,15 @@ func DecryptPW(key []byte, enc_pw []byte) (string, error) {
 	pw := enc_pw[:len(enc_pw)-pad]
 	str_pw := string(pw)
 	return str_pw, nil
+}
+
+func EncodeEncKey(key []byte) string {
+	str_key := base64.StdEncoding.EncodeToString(key)
+	return str_key
+}
+
+func DecodeEncKey(str_key string) ([]byte, error) {
+	byte_key, err := base64.StdEncoding.DecodeString(str_key)
+	if err != nil {return byte_key, err}
+	return byte_key, nil
 }

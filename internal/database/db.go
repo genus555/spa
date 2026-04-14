@@ -21,7 +21,8 @@ func (db *DB) Setup() error {
 	_, err = db.database.Exec(`
 		CREATE TABLE IF NOT EXISTS user (
 			username TEXT NOT NULL,
-			otp_secret TEXT NOT NULL
+			otp_secret TEXT NOT NULL,
+			enc_key TEXT NOT NULL
 			)
 		`)
 	if err != nil {fmt.Errorf("Problem creating user database")}
@@ -99,7 +100,8 @@ func (db *DB) CheckUserExist() (int, error) {
 }
 
 func (db *DB) AddUser(username, otp_secret string) error {
-	_, err := db.database.Exec("INSERT INTO user (username, otp_secret) VALUES (?,?)", username, otp_secret)
+	enc_key := cl.EncodeEncKey(db.GetKey())
+	_, err := db.database.Exec("INSERT INTO user (username, otp_secret, enc_key) VALUES (?,?,?)", username, otp_secret, enc_key)
 	if err != nil {return err}
 	return nil
 }
@@ -133,15 +135,10 @@ func (db *DB) TransferIn() error {
 	if err != nil {return err}
 	src_dir := wd + "/transfer"
 
-	_, err = os.Stat(src_dir+"/.env")
-	if os.IsNotExist(err) {
-		return fmt.Errorf("Missing env file")
-	} else if err != nil {return err}
 	_, err = os.Stat(src_dir+"/passwords.db")
 	if os.IsNotExist(err) {
 		return fmt.Errorf("Missing password database file")
 	} else if err != nil {return err}
-	if err := cl.CopyFile(src_dir+"/.env", wd+"/.env"); err != nil {return err}
 	if err := cl.CopyFile(src_dir+"/passwords.db", wd+"/passwords.db"); err != nil {return err}
 	
 	db.database, err =  sql.Open("sqlite", "./passwords.db")
@@ -165,7 +162,6 @@ func (db *DB) TransferOut() error {
 	} else if err != nil {return err} else if !path_info.IsDir() {
 		return fmt.Errorf("Path doesn't lead to a directory")
 	}
-	if err := cl.CopyFile(wd+"/.env", transfer_dir+"/.env"); err != nil {return err}
 	if err := cl.CopyFile(wd+"/passwords.db", transfer_dir+"/passwords.db"); err != nil {return err}
 
 	db.database, err = sql.Open("sqlite", "./passwords.db")

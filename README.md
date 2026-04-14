@@ -39,10 +39,10 @@ Lists all password names saved onto the passwords database.
 ### Transfer in/out:  
 *Usage: `transfer [in/out]`.*  
 **Transfer out:**  
-Creates a transfer folder containing your .env file which holds the encryption key needed to decrypt your passwords back into readable form.  
+Creates a transfer folder containing your database file which holds your user information, passwords, and encryption key.  
 *Note:* The transfer folder can also serve as a backup folder  
 **Transfer In:**  
-Make sure to have your "Transfer" folder inside the spa directory before running this command. This command will copy over the encryption key and database stored inside the transfer folder into the project folder.  
+Make sure to have your "Transfer" folder inside the spa directory before running this command. This command will copy over the database file inside the transfer folder into the project folder.  
 ### Deleteuser:  
 *Usage: `deleteuser [username] [passcode]`*  
 After verifying the username and passcode provided are correct, this command will delete the user on file and stop the program. To create a new user, simply restart the program and you will be prompted to provide a new username.  

@@ -83,7 +83,7 @@ func HandleCheckUser(db *database.DB) error {
 	var username string
 	var otp_secret string
 	if count == 0 {
-		fmt.Println("No saved user generating passcode...")
+		fmt.Println("No saved user creating user profile...")
 		username, otp_secret, err = auth.NewUser(db)
 		if err != nil {return err}
 		err = HandleAddUser(db, username, otp_secret)
