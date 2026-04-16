@@ -47,6 +47,9 @@ Make sure to have your "Transfer" folder inside the spa directory before running
 *Usage: `deleteuser [username] [passcode]`*  
 After verifying the username and passcode provided are correct, this command will delete the user on file and stop the program. To create a new user, simply restart the program and you will be prompted to provide a new username.  
 *Note:* Deleteuser is to change the user on file and does not wipe the passwords saved to database. To delete saved passwords please use the `delete` command instead.  
+### Clear:  
+*Usage: `clear [username] [passcode]`*  
+After verifying the username and passcode provided are correct, this command will delete the user on file and all passwords saved too. Afterwards the program will close. Restart SPA to create a new user and start saving passwords again.  
 ### Help:  
 *Usage: `help`*  
 Provides a list of available commands and how to use them.  

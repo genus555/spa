@@ -170,3 +170,27 @@ func (db *DB) TransferOut() error {
 	fmt.Println("Transfer folder has been made")
 	return nil
 }
+
+func (db *DB) ClearDatabase() error {
+	var count int
+	if err := db.database.QueryRow("SELECT COUNT(*) FROM passwords").Scan(&count); err != nil {return err}
+	if count != 0 {
+		var names []string
+		rows, err := db.database.Query("SELECT name FROM passwords")
+		if err != nil {return err}
+
+		for rows.Next() {
+			var name string
+			if err := rows.Scan(&name); err != nil {return err}
+			names = append(names, name)
+		}
+		rows.Close()
+
+		for _, name := range names {
+			if err := db.DeleteEntry(name); err != nil {return fmt.Errorf("Problem deleting password \"%s\": %v", name, err)}
+		}
+	}
+
+	if err := db.DeleteUser(db.Username); err != nil {return fmt.Errorf("Problem deteling user \"%s\": %v", db.Username, err)}
+	return nil
+}

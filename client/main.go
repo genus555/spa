@@ -67,6 +67,9 @@ func main() {
 		case "deleteuser":
 			err := h.HandleDeleteUser(db, inputs)
 			if err != nil {fmt.Println(err)} else {return}
+		case "clear":
+			err := h.HandleClearDatabase(db, inputs)
+			if err != nil {fmt.Println(err)} else {return}
 		case "help":
 			cl.PrintCommands()
 		case "quit":

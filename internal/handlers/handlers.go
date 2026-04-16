@@ -135,3 +135,19 @@ func handleGetOTPSecret(db *database.DB, username string) (string, error) {
 	if err != nil {return "", err}
 	return otp_secret, nil
 }
+
+func HandleClearDatabase(db *database.DB, inputs []string) error {
+	if len(inputs) != 3 {
+		return fmt.Errorf("Too many/few arguments. Usage: clear [username] [passcode]")
+	}
+	username := inputs[1]
+	passcode := inputs[2]
+	otp_secret, err := handleGetOTPSecret(db, username)
+	if err != nil {return err}
+	valid, err := auth.Valid(db, username, passcode, otp_secret)
+	if err != nil {return err} else if !valid {return fmt.Errorf("Wrong username or passcode")}
+
+	err = db.ClearDatabase()
+	if err != nil {return err}
+	return nil
+}

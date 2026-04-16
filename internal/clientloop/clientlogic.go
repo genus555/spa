@@ -45,6 +45,7 @@ func PrintCommands() {
 	fmt.Println("	*list:\n	     Lists all saved password names\n	     Usage: list")
 	fmt.Println("	*transfer:\n	     For transferring information to new device (More info on github.com/genus555/spa\n	     Usage: transfer [in/out]")
 	fmt.Println("	*deleteuser:\n	     Deletes the user on file and stops the program\n	     Usage: deleteuser [username] [passcode]")
+	fmt.Println("	*clear:\n	     Wipes database clean\n	     Usage: clear [username] [passcode]")
 	fmt.Println("	*help:\n	     Shows available commands")
 	fmt.Println("	*quit:\n	     Stop program")
 }
